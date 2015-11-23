@@ -1,0 +1,24 @@
+
+
+<ion-modal-view ng-controller="ModalCtrl">
+<ion-header-bar class="bar-positive">
+<h1 class="title">My Modal title</h1>
+</ion-header-bar>
+<ion-content class="padding">
+
+<!-- form to add meals -->
+<div class="list list-inset">
+	<label class="item item-input">
+		<input type="text" placeholder="Meal Name" ng-model="newMeal.name">
+	</label>
+	<label class="item item-input">
+		<input type="text" placeholder="Meal Price" ng-model="newMeal.price">
+	</label>
+</div>
+<!-- submit button -->
+<button class="button button-block button-calm" ng-click="addMeal()">Add Meal</button>
+
+<button class="button button-block" ng-click="closeAddModal()">Close</button>
+</ion-content>
+</ion-modal-view>
+

@@ -1,0 +1,25 @@
+	
+
+<!-- this title will appear at nav bar  -->
+<ion-view view-title="Login">
+<ion-content class="padding" ng-controller="LoginCtrl">
+
+<!-- login fields -->
+<form ng-submit="login()">
+
+<div class="list list-inset">
+	<label class="item item-input">
+		<input type="email" placeholder="Email" ng-model="loginData.email">
+	</label>
+
+	<label class="item item-input">   
+		<input type="password" placeholder="Password" ng-model="loginData.password">
+	</label>
+</div>
+<!-- login submit button -->
+<button type="submit" class="button button-block button-balanced">Login</button>
+</form>
+
+</ion-content>
+</ion-view>
+

@@ -1,0 +1,31 @@
+	<!-- this title will appear at nav bar  -->
+
+
+	<ion-view view-title="Welcome">
+
+
+	<ion-nav-buttons side="right">
+	<button class="button button-calm" ng-click="addItem()">Add</button>
+	</ion-nav-buttons>
+
+	
+	<ion-content>
+	<!-- logout button  -->
+	<button class="button button-block" ng-click="logout()">Logout</button>
+
+	<!-- bar code scanner test  --> 
+	<button class="button button-block button-royal" ng-click="scanBarcode()">Scan</button>
+
+	<!-- decode testing -->
+	<button class="button button-block button-energized" ng-click="encodeBarcode()">Encode</button>
+
+	<!-- list of meals -->
+	<ion-list>
+		<ion-item ng-repeat="meal in allMeals track by $index" ng-click="mealClicked($index)">
+			<p>{{meal.name}}</p>
+		</ion-item> 
+	</ion-list>
+
+	</ion-content>
+	</ion-view>
+

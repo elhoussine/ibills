@@ -1,0 +1,88 @@
+
+
+<ion-modal-view ng-controller="ModalCtrl">
+<ion-header-bar class="bar-positive">
+<h1 class="title">Add Bill</h1>
+</ion-header-bar>
+<ion-content class="padding">
+
+<!-- form to add meals -->
+<div class="list list-inset">
+<!-- bill id -->
+	<label class="item item-input">
+		<input type="text" placeholder="Bill ID" ng-model="Bill.id">
+	</label>
+
+	<!-- authority / company -->
+	<label class="item item-input">
+		<input type="text" placeholder="Authority" ng-model="Bill.authority">
+	</label>
+
+	<!-- customer name -->
+	<label class="item item-input">
+		<input type="text" placeholder="Customer Name" ng-model="Bill.customerName">
+	</label>
+
+	<!-- customer id -->
+	<label class="item item-input">
+		<input type="text" placeholder="Customer ID" ng-model="Bill.customerId">
+	</label>
+
+	<!-- payment method -->
+	<label class="item item-input">
+		<input type="text" placeholder="Payment Method" ng-model="Bill.paymentMethod">
+	</label>
+
+	<!-- payment / cash -->
+	<label class="item item-input">
+		<input type="number" placeholder="Payment" ng-model="Bill.payment">
+	</label>
+
+	<!-- change back -->
+	<label class="item item-input">
+		<input type="number" placeholder="Change" ng-model="Bill.change">
+	</label>
+
+	<!-- return policy if applicable -->
+	<label class="item item-input">
+		<input type="text" placeholder="Return Policy" ng-model="Bill.returnPolicy">
+	</label>
+
+
+	<!-- add items button  -->
+	<button class="button button-block button-positive button-outline" ng-click="addItem()">Add Item</button>
+
+
+	<div id="items" ng-repeat="item in Items track by $index">
+		<div class="item item-divider">
+			Item {{ $index+1 }} 
+		</div>
+		<label class="item item-input">
+			<input type="text" placeholder="Item Name" ng-model="item.name">
+		</label>
+
+		<!-- adding ionic grid -->
+		<div class="row">
+			<div class="col">
+				<label class="item item-input">
+					<input type="number" placeholder="Item Price" ng-model="item.price">
+				</label>
+			</div>
+			<div class="col">
+				<label class="item item-input">
+					<input type="number" placeholder="Item Quantity" ng-model="item.quantity">
+				</label>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<!-- submit button -->
+<button class="button button-block button-calm" ng-click="addBill()">Save Bill</button>
+
+
+<button class="button button-block" ng-click="closeAddModal()">Close</button>
+</ion-content>
+</ion-modal-view>
+
