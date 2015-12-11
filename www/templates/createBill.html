@@ -1,0 +1,70 @@
+<ion-modal-view ng-controller="CreateBillCtrl">
+<ion-header-bar class="bar-stable">
+<h1 class="title">Create New Bill</h1>
+</ion-header-bar>
+
+
+<ion-content class="padding" style="font-size:1.2em;">
+
+
+<div class="list">
+	<label class="item item-input">
+		<input type="text" placeholder="Issuer Name" ng-model="newBill.issuer">
+	</label>
+
+	<label class="item item-input">
+		<input type="text" placeholder="Bill No." ng-model="newBill.number">
+	</label>
+
+	<label class="item item-input">
+		<input type="text" placeholder="Payment Method" ng-model="newBill.payment_method">
+	</label>
+
+	<label class="item item-input">
+		<input type="text" placeholder="Return Policy" ng-model="newBill.return_policy">
+	</label>
+</div>
+
+<div class="list" ng-repeat="item in getNumber(numberOfItems.number) track by $index">
+	<label class="item item-input">
+		<input type="text" placeholder="Item Name" ng-model="items[$index].name">
+	</label>
+	<label class="item item-input">
+
+		<input type="text" placeholder="Item Price" ng-model="items[$index].price">
+	</label>
+	<label class="item item-input">
+		<input type="text" placeholder="Item Quantity" ng-model="items[$index].quantity">
+	</label>
+</div>
+
+
+
+<div class="list">
+	<label class="item item-input">
+		<input type="number" placeholder="Number of Items" ng-model="numberOfItems.number">
+	</label>
+
+	<label class="item item-input">
+		<input type="text" placeholder="Total" ng-model="newBill.total">
+	</label>
+
+	<label class="item item-input">
+		<input type="text" placeholder="Cash in" ng-model="newBill.cash">
+	</label>
+
+	<label class="item item-input">
+		<input type="text" placeholder="Change" ng-model="newBill.change">
+	</label>
+
+</div>
+
+
+<!-- confirm button -->
+<button class="button button-block button-dark" ng-click="create()">Create</button> 
+
+<!-- close modal -->
+<button class="button button-block button-assertive" ng-click="closeCreateBillModal()">Close</button> 
+
+</ion-content>
+</ion-modal-view>

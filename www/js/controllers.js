@@ -180,7 +180,7 @@ cApp.controller('LoginCtrl', function($scope, $rootScope, $ionicPopup, $state, $
 
 
 // home page controller 
-cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope, $state, $ionicModal, Auth, $firebaseArray) { 
+cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope, $state, $ionicModal, Auth, $firebaseArray, $ionicLoading) { 
 
   // user's auth 
   $scope.auth = Auth; 
@@ -201,8 +201,7 @@ cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope,
 
 
 
-  var currentUserRef = usersRef.child(uid);
-  var usersBillsRef = currentUserRef.child("bills");
+      var currentUserRef = usersRef.child(uid);
 
   // defining input models
   $scope.newbill = {};
@@ -247,19 +246,29 @@ cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope,
   // array to hold retrieved all bills and customer bills 
   $scope.usersBills= [];
 
- 
 
-		// getting meals from database
+
+		// getting bills from database
 		$scope.getBills = function () { 
 
-      $scope.usersBills = $firebaseArray(usersBillsRef);
+      // showing ionic loading icon in beginning of data fetching 
+      $ionicLoading.show();
+
+      $scope.usersBills = $firebaseArray(currentUserRef);
+
+      // setting a callback to hide ionic loading 
+      $scope.usersBills.$loaded(function(x){ 
+
+        $ionicLoading.hide();
+
+      }, function(error){});
     };
 
 
-       $scope.doRefresh = function() {
-    $scope.$broadcast('scroll.refreshComplete');
-    $scope.$apply()
-  };
+    $scope.doRefresh = function() {
+      $scope.$broadcast('scroll.refreshComplete');
+      $scope.$apply()
+    };
     // calling get/retrieve bills function 
     $scope.getBills();
 
@@ -273,9 +282,9 @@ cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope,
         // Success! Barcode data is here
         var str = barcodeData.text;
 
-      var partsOfStr = str.split(',');
-      var itemsCount = 0;
-      var itemsArray = [];
+        var partsOfStr = str.split(',');
+        var itemsCount = 0;
+        var itemsArray = [];
 
       for (i = 7; i < partsOfStr.length; i+=3) { 
         console.log("items: " + partsOfStr[i] + " price: " + partsOfStr[i+1] + " quantity: " + partsOfStr[i+2]);
@@ -289,22 +298,27 @@ cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope,
 
 
       
+      var issuerRef = currentUserRef.child(partsOfStr[0]);
+      var issuerBillsRef = issuerRef.child("bills");
+      var saveBill = issuerBillsRef.push();
 
-      var saveBill = usersBillsRef.push();
+      // miliseconds since Jan 01 1970 
+      var timestamp = new Date().getTime();
 
       saveBill.set({
-        
+
         bill_issuer: partsOfStr[0],
-        date: partsOfStr[1],
-        bill_number: parseFloat(partsOfStr[2]), 
-        payment_method: partsOfStr[3],
-        cash_in: parseFloat(partsOfStr[4]),
-        change: parseFloat(partsOfStr[5]),
-        return_policy: partsOfStr[6],
+        date: timestamp,
+        bill_number: parseFloat(partsOfStr[1]), 
+        payment_method: partsOfStr[2],
+        cash_in: parseFloat(partsOfStr[3]),
+        change: parseFloat(partsOfStr[4]),
+        return_policy: partsOfStr[5],
+        total: partsOfStr[6],
         zitems: itemsArray
 
       });
-  
+
 
       }, function(error) {
         // An error occurred
@@ -316,14 +330,8 @@ cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope,
 $scope.addBill = function() { 
   console.log("inside add bill");
 
-
-      /* 
-      text to be analyzed : 
-      police,12Nov2015,22122,ef83537d-95a4-48c4-899b-290408383f29,cash,500,450,no return after one week,karak,1,2,water,3,4
-      */
-
       // trying to analyze text
-      var str = "what,12Nov2015,3303,cash,100,20,not applicable,100MB package,50,1,1000 Minutes,100,2";
+      var str = "Ministry of Health,3303,cash,100,20,not applicable,100,Panadol,10,5,Ani Biotic,100,2";
       var partsOfStr = str.split(',');
       var itemsCount = 0;
       var itemsArray = [];
@@ -340,18 +348,23 @@ $scope.addBill = function() {
 
 
       
+      var issuerRef = currentUserRef.child(partsOfStr[0]);
+      var issuerBillsRef = issuerRef.child("bills");
+      var saveBill = issuerBillsRef.push();
 
-      var saveBill = usersBillsRef.push();
+      // miliseconds since Jan 01 1970 
+      var timestamp = new Date().getTime();
 
       saveBill.set({
-        
+
         bill_issuer: partsOfStr[0],
-        date: partsOfStr[1],
-        bill_number: parseFloat(partsOfStr[2]), 
-        payment_method: partsOfStr[3],
-        cash_in: parseFloat(partsOfStr[4]),
-        change: parseFloat(partsOfStr[5]),
-        return_policy: partsOfStr[6],
+        date: timestamp,
+        bill_number: parseFloat(partsOfStr[1]), 
+        payment_method: partsOfStr[2],
+        cash_in: parseFloat(partsOfStr[3]),
+        change: parseFloat(partsOfStr[4]),
+        return_policy: partsOfStr[5],
+        total: partsOfStr[6],
         zitems: itemsArray
 
       });
@@ -360,7 +373,7 @@ $scope.addBill = function() {
 
 
      // modal for selected bill 
-    $ionicModal.fromTemplateUrl('templates/selectedBill.html', {
+     $ionicModal.fromTemplateUrl('templates/selectedBill.html', {
       scope: $scope, 
       animation: 'slide-in-up'
     }).then(function(modal) { 
@@ -393,49 +406,50 @@ $scope.addBill = function() {
     });
 
 
-    $scope.billClicked = function($index) { 
+    $scope.billClicked = function($issuer, $index) { 
+
+
+      // creating different refs to get particular issuer bills
+      var issuerRef = currentUserRef.child($issuer);
+      var issuerBillsRef = issuerRef.child("bills");
+      var issuerBills = $firebaseArray(issuerBillsRef);
+
+      // callback to loading bills that assigns $scope.selectedBills and shows modal
+      issuerBills.$loaded(function(x) { 
 
 
       // passing clicked bill to modal scope
-      $scope.selectedBill = $scope.usersBills[$index];
+      $scope.selectedBill = issuerBills[$index];      
+      console.log($scope.selectedBill);
 
       // setting scope uid to use as customer id 
       $scope.uid = uid;
+      $scope.clickedIssuer = $issuer;
 
       // showing modal
       $scope.selectedBillShow();
+      }, function(error) { 
+        console.log("error loading issuer bills");
+      });
+
     };
 
-$scope.test = function () {
-  $( "#item" ).toggle( "highlight" );
-}
 
-    }
-  });
-  });
+    $scope.getDateString = function (timestamp) { 
+      // getting string 
+      var date = new Date(timestamp);
+      var dateString = date.toString();
+      var dateStringFinal = dateString.substring(0, dateString.length-14);
 
-
-
-
+      return dateStringFinal;
+    };
 
 
-
-
-
-
-
-
-myApp.controller('PanelCtrl', function($state, $scope) { 
-  // function to logout admin
-  $scope.logout = function() { 
-    ibillsRef.unauth();
-    $state.go('login');
-
-    // debugging purpose 
-    console.log("user logged out successfully");
-  };
-
+    // you are exiting auth state 
+  }
 });
+});
+
 
 
 // selected meal modal controller
@@ -444,9 +458,13 @@ myApp.controller('SelectedBillCtrl', function($scope) {
 
   // delete bill function 
   $scope.deleteBill = function() { 
-    var userRef = usersRef.child($scope.uid);
-    var usersBillsRef = userRef.child("bills")
-    usersBillsRef.child($scope.selectedBill.$id).remove();
+
+    // deleting process containing multiple refs 
+    var currentUserRef = usersRef.child($scope.uid);
+    var issuerRef = currentUserRef.child($scope.clickedIssuer);
+    var issuerBillsRef = issuerRef.child("bills");
+
+    issuerBillsRef.child($scope.selectedBill.$id).remove();
     $scope.closeBillModal();
   };
 
@@ -459,6 +477,109 @@ myApp.controller('SelectedBillCtrl', function($scope) {
 
 
 
+
+
+myApp.controller('PanelCtrl', function($state, $scope, $ionicModal) { 
+  // function to logout admin
+  $scope.logout = function() { 
+    ibillsRef.unauth();
+    $state.go('login');
+
+    // debugging purpose 
+    console.log("user logged out successfully");
+  };
+
+
+
+
+
+  // modal business 
+  // modal for settings
+  $ionicModal.fromTemplateUrl('templates/admin_settings.html', {
+    scope: $scope, 
+    animation: 'slide-in-up'
+  }).then(function(modal) { 
+   $scope.settingsModal = modal;
+  });
+
+  $scope.showSettingsModal = function () { 
+   $scope.settingsModal.show();
+  };
+
+  $scope.closeSettingsModal = function() { 
+   $scope.settingsModal.hide();
+  };
+
+
+  // modal for creating new bill
+  $ionicModal.fromTemplateUrl('templates/createBill.html', {
+    scope: $scope, 
+    animation: 'slide-in-up'
+  }).then(function(modal) { 
+   $scope.createBillModal = modal;
+  });
+
+  $scope.showCreateBillModal = function () { 
+   $scope.createBillModal.show();
+  };
+
+  $scope.closeCreateBillModal = function() { 
+   $scope.createBillModal.hide();
+  };
+
+
+});
+
+
+
+
+
+myApp.controller('SettingsCtrl', function($scope) { 
+
+  $scope.confirmSettings = function () { 
+    // confirm settings button clicked
+  };
+
+});
+
+myApp.controller('CreateBillCtrl', function($scope) { 
+  
+  $scope.newBill = [];
+  $scope.items = [];
+  $scope.numberOfItems = [];
+
+  $scope.getNumber = function(num) {
+    return new Array(num); 
+  }
+
+  $scope.create = function() { 
+    // create button clicked 
+    console.log($scope.items);
+  };
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // // miliseconds 
+  // var timestamp = new Date().getTime();
+  
+  // // getting string 
+  // var date = new Date(timestamp);
+  // var dateString = date.toString();
+  // var dateStringFinal = dateString.substring(0, dateString.length-14);
 
 
 

@@ -12,7 +12,7 @@
 
 <div class="row">
 <div class="col">Date</div>
-<div class="col">: {{selectedBill.date}}</div>
+<div class="col">: {{getDateString(selectedBill.date)}}</div>
 </div>
 
 <div class="row">
@@ -35,6 +35,12 @@
 <div class="col">Payment</div>
 <div class="col">: {{selectedBill.payment_method}}</div>
 </div>
+
+<div class="row">
+<div class="col">Total</div>
+<div class="col">: {{selectedBill.total}}</div>
+</div>
+
 
 <div class="row">
 <div class="col">Cash:</div>

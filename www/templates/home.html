@@ -1,7 +1,7 @@
 	<!-- this title will appear at nav bar  -->
 
 
-	<ion-view view-title="Welcome Customer">
+	<ion-view view-title="iBills">
 
 	<ion-nav-buttons side="right">
 	<button class="button" ng-click="logout()">Logout</button>
@@ -14,16 +14,29 @@
     </ion-refresher>
 
 
-	<!-- list of meals -->
-	<ion-list>
-		<ion-item ng-repeat="bill in usersBills track by $index" ng-click="billClicked($index)">
-			<p>{{bill.bill_issuer}}</p>
-		</ion-item> 
-	</ion-list>
+
+	<div class="list" ng-repeat="issuer in usersBills">
+
+		<div class="item item-divider">
+		{{issuer.$id}}
+		</div>
+
+		<div class="item" ng-repeat="bill in issuer.bills track by $index" ng-click="billClicked(issuer.$id, $index)">
+		<i class="icon ion-ios-paper"></i>
+
+		{{bill.total}} -/AED
+
+		<span class="item-note">{{getDateString(bill.date)}}</span>
+		</div>
+
+		
+
+
+	</div>
 
 
 	<!-- logout button  -->
-		<button class="button button-block" ng-click="scanBarcode()">scan</button>
+	<button class="button button-block button-positive" ng-click="scanBarcode()">Scan New Bill</button>
 
 		
 

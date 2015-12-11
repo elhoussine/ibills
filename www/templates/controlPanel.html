@@ -3,12 +3,15 @@
 
 	<ion-view view-title="Welcome Admin">
 
-
+	<ion-nav-buttons side="right">
+	<button class="button" ng-click="showSettingsModal()"><i class="icon ion-ios-gear"></i></button>
+	</ion-nav-buttons>
 
 	
 	<ion-content>
-	<h2>This is what an admin will see</h2>
-	<button class="button button-block button-positive" ng-click="logout()">Logout</button>
+	<button class="button button-block button-dark" ng-click="logout()">Logout</button>
+	<button class="button button-block button-positive" ng-click="showCreateBillModal()">Create Bill</button>
+
 	</ion-content>
 	</ion-view>
 
