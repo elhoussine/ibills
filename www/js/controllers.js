@@ -491,8 +491,6 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal) {
 
 
 
-
-
   // modal business 
   // modal for settings
   $ionicModal.fromTemplateUrl('templates/admin_settings.html', {
@@ -542,7 +540,7 @@ myApp.controller('SettingsCtrl', function($scope) {
 
 });
 
-myApp.controller('CreateBillCtrl', function($scope) { 
+myApp.controller('CreateBillCtrl', function($scope, $ionicPopup) { 
   
   $scope.newBill = [];
   $scope.items = [];
@@ -554,8 +552,55 @@ myApp.controller('CreateBillCtrl', function($scope) {
 
   $scope.create = function() { 
     // create button clicked 
-    console.log($scope.items);
+    // adding bill to customer id 
+    var currentUserRef = usersRef.child($scope.newBill.customer_id);
+    var issuerRef = currentUserRef.child($scope.newBill.issuer);
+    var issuerBillsRef = issuerRef.child("bills");
+    var saveBill = issuerBillsRef.push();
+
+    // miliseconds since Jan 01 1970 
+    var timestamp = new Date().getTime();
+
+    saveBill.set({
+
+      bill_issuer: $scope.newBill.issuer,
+      date: timestamp,
+      bill_number: parseFloat($scope.newBill.number), 
+      payment_method: $scope.newBill.payment_method,
+      cash_in: parseFloat($scope.newBill.cash),
+      change: parseFloat($scope.newBill.change),
+      return_policy: $scope.newBill.return_policy,
+      total: $scope.newBill.total,
+      zitems: $scope.items
+    });
   };
+
+  // An alert dialog
+  $scope.createBarcode = function() {
+
+    // getting bill's string 
+    var billString = new String($scope.newBill.issuer + "," + $scope.newBill.number + "," +  $scope.newBill.payment_method + "," + $scope.newBill.cash + "," + $scope.newBill.change + "," + $scope.newBill.return_policy + "," + $scope.newBill.total);
+
+    // looping through items array to add each detail to bill's string 
+    for (i = 0; i < $scope.items.length; i++) {
+      billString += ",";
+      billString += $scope.items[i].name;
+      billString += ",";
+      billString += $scope.items[i].price;
+      billString += ",";
+      billString += $scope.items[i].quantity;
+    }
+
+    // creating popup alert and showing it
+   var alertPopup = $ionicPopup.alert({
+     title: 'Kindly Scan Barcode',
+     template: '<div align="center"><img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + billString +  'alt="barcode"></div>'
+   });
+   alertPopup.then(function(res) {
+    // after the customer clicks ok
+   });
+  };
+
 
 });
 

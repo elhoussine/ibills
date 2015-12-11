@@ -17,6 +17,11 @@
 	</label>
 
 	<label class="item item-input">
+		<input type="text" placeholder="Customer ID" ng-model="newBill.customer_id">
+	</label>
+
+
+	<label class="item item-input">
 		<input type="text" placeholder="Payment Method" ng-model="newBill.payment_method">
 	</label>
 
@@ -61,7 +66,9 @@
 
 
 <!-- confirm button -->
-<button class="button button-block button-dark" ng-click="create()">Create</button> 
+<button class="button button-block button-dark" ng-click="create()">Save Directly to Customer Account</button> 
+<!-- confirm button -->
+<button class="button button-block button-energized" ng-click="createBarcode()">Create Barcode</button> 
 
 <!-- close modal -->
 <button class="button button-block button-assertive" ng-click="closeCreateBillModal()">Close</button> 
