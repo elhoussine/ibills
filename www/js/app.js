@@ -25,7 +25,16 @@ myApp.config(function($stateProvider, $urlRouterProvider) {
     url: '/home', 
     controller: 'HomeCtrl',
     templateUrl: 'templates/home.html'
+  })
+
+  
+
+  .state('controlPanel', { 
+    url: '/controlPanel', 
+    controller: 'PanelCtrl',
+    templateUrl: 'templates/controlPanel.html'
   });
+
 
 
 });

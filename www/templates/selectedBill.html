@@ -1,0 +1,61 @@
+<ion-modal-view ng-controller="SelectedBillCtrl">
+<ion-header-bar class="bar-stable">
+<h1 class="title">{{selectedBill.bill_issuer}}</h1>
+</ion-header-bar>
+<ion-content class="padding" style="font-size:1.2em;">
+
+
+<div class="row">
+<div class="col">Bill No.</div>
+<div class="col">: {{selectedBill.bill_number}}</div>
+</div>
+
+<div class="row">
+<div class="col">Date</div>
+<div class="col">: {{selectedBill.date}}</div>
+</div>
+
+<div class="row">
+<div class="col">Customer ID</div>
+<div class="col">: {{uid}}</div>
+</div>
+
+<hr>
+
+<div align="center">
+<div class="row" ng-repeat="item in selectedBill.zitems">
+<div class="col">{{item.name}} × {{item.quantity}}</div>
+<div class="col">{{item.price}}</div>
+</div>
+</div>
+
+<hr>
+
+<div class="row">
+<div class="col">Payment</div>
+<div class="col">: {{selectedBill.payment_method}}</div>
+</div>
+
+<div class="row">
+<div class="col">Cash:</div>
+<div class="col">: {{selectedBill.cash_in}}</div>
+</div>
+
+<div class="row">
+<div class="col">Change</div>
+<div class="col">: {{selectedBill.change}}</div>
+</div>
+
+<hr>
+
+<div align="center"><b>{{selectedBill.return_policy}}</b></div>
+
+<hr>
+
+<!-- close modal -->
+<button class="button button-block button-dark" ng-click="closeBillModal()">Close</button> 
+
+<!-- delete button -->
+<button class="button button-block button-assertive" ng-click="deleteBill()">Delete</button> 
+</ion-content>
+</ion-modal-view>
