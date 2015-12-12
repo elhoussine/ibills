@@ -5,6 +5,8 @@ var cApp = angular.module('starter.controllers', ['ionic', 'firebase', 'ngCordov
 // ibills firebase app ref 
 var  ibillsRef = new Firebase("https://ibills.firebaseio.com/");
 var usersRef = ibillsRef.child("users");
+var issuersRef = ibillsRef.child("issuers");
+var itemsRef = ibillsRef.child("items");
 var uid = null;
 
 // creating variable that holds uid of admins
@@ -331,7 +333,7 @@ $scope.addBill = function() {
   console.log("inside add bill");
 
       // trying to analyze text
-      var str = "Ministry of Health,3303,cash,100,20,not applicable,100,Panadol,10,5,Ani Biotic,100,2";
+      var str = "PoPo,3303,cash,100,20,not applicable,100,Panadol,10,5,Ani Biotic,100,2";
       var partsOfStr = str.split(',');
       var itemsCount = 0;
       var itemsArray = [];
@@ -347,7 +349,7 @@ $scope.addBill = function() {
       }
 
 
-      
+      // saving bill to customer id 
       var issuerRef = currentUserRef.child(partsOfStr[0]);
       var issuerBillsRef = issuerRef.child("bills");
       var saveBill = issuerBillsRef.push();
@@ -478,8 +480,21 @@ myApp.controller('SelectedBillCtrl', function($scope) {
 
 
 
+/*
+Controller for Admin's control panel
+*/
 
-myApp.controller('PanelCtrl', function($state, $scope, $ionicModal) { 
+
+myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArray, $ionicLoading) { 
+  // hiding statistics elements 
+  document.getElementById("allIssuers").style.visibility = "hidden"; 
+  document.getElementById("allCustomers").style.visibility = "hidden"; 
+  document.getElementById("ministryOfHealth").style.visibility = "hidden"; 
+  document.getElementById("police").style.visibility = "hidden"; 
+  document.getElementById("du").style.visibility = "hidden"; 
+  // defining variables 
+  $scope.dropdown = [];
+
   // function to logout admin
   $scope.logout = function() { 
     ibillsRef.unauth();
@@ -488,6 +503,136 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal) {
     // debugging purpose 
     console.log("user logged out successfully");
   };
+
+  // function to merge arrays with same issuer 
+  $scope.merge = function(arrayOfObjects) { 
+
+    for (i = 0; i < arrayOfObjects.length; i++) { 
+      for (j = i+1; j < arrayOfObjects.length; j++) { 
+        if (arrayOfObjects[i].issuer == arrayOfObjects[j].issuer) { 
+          arrayOfObjects[i].income += arrayOfObjects[j].income;
+          arrayOfObjects[i].items_sold += arrayOfObjects[j].items_sold;
+          arrayOfObjects.splice([j], 1);
+        }
+      }
+    }
+    return arrayOfObjects;
+  };
+
+  // function to fix customer id 
+  $scope.fixCustomerID = function (arrayOfObjects) { 
+    // array will hold users id's
+    var usersID = [];
+
+    // fetching all users
+    var allUsers = $firebaseArray(usersRef);
+
+    // fetching users callback
+    allUsers.$loaded(function(success){
+
+      // filling users id array 
+      for (u = 0; u < allUsers.length; u++) { 
+        arrayOfObjects[u].customer_id = allUsers[u].$id;
+      }
+
+    });  
+
+    return arrayOfObjects;
+  };
+
+  $scope.go = function(selected) { 
+    // making sure all elements are hidden
+    document.getElementById("allIssuers").style.visibility = "hidden";
+    document.getElementById("allCustomers").style.visibility = "hidden"; 
+    document.getElementById("ministryOfHealth").style.visibility = "hidden"; 
+    document.getElementById("police").style.visibility = "hidden"; 
+    document.getElementById("du").style.visibility = "hidden"; 
+ 
+    if ($scope.dropdown.selected == "All Issuers") { 
+      $scope.allIssuersStatis();
+    }
+  };
+
+  $scope.allIssuersStatis = function() { 
+
+    $ionicLoading.show();
+
+    // array will hold users id's
+    $scope.usersID = [];
+
+    // fetching all users
+    $scope.allUsers = $firebaseArray(usersRef);
+
+    // fetching users callback
+    $scope.allUsers.$loaded(function(success){
+
+      // filling users id array 
+      for (u = 0; u < $scope.allUsers.length; u++) { 
+        $scope.usersID.push($scope.allUsers[u].$id);
+      }
+
+      $scope.issuerStatis = [];
+      $scope.customersStatis = [];
+      $scope.itemsStatis = [];
+      
+      for (u = 0; u < $scope.usersID.length; u++) {
+
+        var testingRef = new Firebase("https://ibills.firebaseio.com/users/" + $scope.usersID[u]);
+        $scope.userIssuers = $firebaseArray(testingRef);
+        $scope.userIssuers.$loaded(function(x){
+          
+          // looping through particular user's issuers 
+          for (i = 0; i < x.length; i++) { 
+            var xbill = x[i].bills;
+            var billsArray = Object.keys(xbill).map(function (key) {return xbill[key]});
+            // issuer statictics 
+            var total_income = 0;
+            var items_sold = 0;
+
+            
+            for (j = 0; j < billsArray.length; j++) { 
+              var bill = billsArray[j];
+
+              // getting total number of items 
+              // through accessing each bill 
+              for (k = 0; k < bill.zitems.length; k++) { 
+                var item = bill.zitems[k];
+                items_sold += parseFloat(item.quantity);
+              }
+
+              total_income += parseFloat(bill.total);
+            }
+
+            // pushing into all issuers statistics
+            $scope.issuerStatis.push({
+              issuer: x[i].$id,
+              income: total_income,
+              items_sold: items_sold
+            });
+
+
+          }
+
+          // pushing into all customers statistics
+          $scope.customersStatis.push({
+            customer_id: $scope.usersID[u],
+            total_purchases: total_income,
+            total_items_purchased: items_sold
+          });
+
+          // calling fix customer id function to fill customer id with proper data 
+          $scope.customersStatis = $scope.fixCustomerID($scope.customersStatis);
+          console.log($scope.customersStatis);
+          $scope.issuerStatis = $scope.merge($scope.issuerStatis);
+          $ionicLoading.hide();
+        }, function(error){});
+      }
+    }, function(error){});
+  document.getElementById("allIssuers").style.visibility = "visible";
+  document.getElementById("allCustomers").style.visibility = "visible";
+  };
+
+
 
 
 
@@ -507,7 +652,6 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal) {
   $scope.closeSettingsModal = function() { 
    $scope.settingsModal.hide();
   };
-
 
   // modal for creating new bill
   $ionicModal.fromTemplateUrl('templates/createBill.html', {
@@ -539,6 +683,19 @@ myApp.controller('SettingsCtrl', function($scope) {
   };
 
 });
+
+
+
+
+
+
+
+
+
+/*
+Controller for Create Bill modal 
+*/
+
 
 myApp.controller('CreateBillCtrl', function($scope, $ionicPopup) { 
   
@@ -598,6 +755,8 @@ myApp.controller('CreateBillCtrl', function($scope, $ionicPopup) {
    });
    alertPopup.then(function(res) {
     // after the customer clicks ok
+    // closing modal 
+    $scope.closeCreateBillModal();
    });
   };
 

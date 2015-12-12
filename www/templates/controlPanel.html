@@ -1,17 +1,115 @@
-	<!-- this title will appear at nav bar  -->
+<!-- this title will appear at nav bar  -->
 
 
-	<ion-view view-title="Welcome Admin">
+<ion-view view-title="Welcome Admin">
 
-	<ion-nav-buttons side="right">
-	<button class="button" ng-click="showSettingsModal()"><i class="icon ion-ios-gear"></i></button>
-	</ion-nav-buttons>
+<ion-nav-buttons side="right">
+<button class="button" ng-click="showSettingsModal()"><i class="icon ion-ios-gear"></i></button>
+</ion-nav-buttons>
 
-	
-	<ion-content>
-	<button class="button button-block button-dark" ng-click="logout()">Logout</button>
-	<button class="button button-block button-positive" ng-click="showCreateBillModal()">Create Bill</button>
 
-	</ion-content>
-	</ion-view>
+
+<ion-content>
+
+<div class="row">
+	<div class="col">
+		<!-- logout button -->
+		<button class="button button-block button-dark" ng-click="logout()">Logout</button>
+	</div>
+	<div class="col">
+		<!-- create bill button -->
+		<button class="button button-block button-positive" ng-click="showCreateBillModal()">Create Bill</button>
+	</div>
+</div>
+<!-- searching elements -->
+<!-- <div id="search-bar">
+	<div class="item item-input-inset">
+		<label class="item-input-wrapper" id="search-input">
+			<i class="icon ion-search placeholder-icon"></i>
+			<input type="text" placeholder="Search" ng-model="query.text" ng-change="search()">
+		</label>
+	</div>
+</div>
+-->
+
+<!-- choosing an issuer -->
+<hr>
+<h2 align="center">Statistics</h2>
+<div class="list">
+	<label class="item item-input item-select">
+		<div class="input-label">
+			Select an Issuer 
+		</div>
+		<select ng-model="dropdown.selected">
+			<option selected>All Issuers</option>
+			<option>Etisalat</option>
+			<option>Ministry of Health</option>
+			<option>Police</option>
+			<option>Du</option>
+		</select>
+	</label>
+</div>
+
+
+<!-- testing button -->
+<button class="button button-block button-balanced" ng-click="go()">Go</button>
+
+
+
+
+
+<div id="allCustomers" align="center">
+	<h3>By Issuer</h3>
+	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
+		<div class="col">Customer ID</div>
+		<div class="col">Total Purchases</div>
+		<div class="col">Items Purchased</div>
+	</div>
+
+	<br>
+
+	<div class="row" ng-repeat="issuer in issuerStatis track by $index">
+		<div class="col">{{issuer.issuer}}</div>
+		<div class="col">{{issuer.income}} -/AED</div>
+		<div class="col">{{issuer.items_sold}}</div>
+	</div>
+	<hr>
+</div>
+ 
+<!-- statistics results -->
+<div id="allIssuers" align="center">
+<br>
+<h3>By Customer</h3>
+	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
+		<div class="col">Issuer Name</div>
+		<div class="col">Total Income</div>
+		<div class="col">Items Sold</div>
+	</div>
+
+	<br>
+
+	<div class="row" ng-repeat="customer in customersStatis track by $index">
+		<div class="col">{{customer.customer_id}}</div>
+		<div class="col">{{customer.total_purchases}} -/AED</div>
+		<div class="col">{{customer.total_items_purchased}}</div>
+	</div>
+	<hr>
+</div>
+
+	<div id="etisalat">
+	</div>
+
+	<div id="ministryOfHealth">
+	</div>
+
+	<div id="du">
+	</div>
+
+	<div id="police">
+	</div>
+
+</ion-content>
+
+
+</ion-view>
 
