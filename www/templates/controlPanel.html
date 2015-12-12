@@ -42,48 +42,43 @@
 		</div>
 		<select ng-model="dropdown.selected">
 			<option selected>All Issuers</option>
-			<option>Etisalat</option>
-			<option>Ministry of Health</option>
-			<option>Police</option>
-			<option>Du</option>
+			<option ng-repeat="issuer in issuerStatis track by $index">{{issuer.issuer}}</option>
 		</select>
 	</label>
 </div>
 
 
-<!-- testing button -->
+<!-- go button -->
 <button class="button button-block button-balanced" ng-click="go()">Go</button>
 
 
-
-
-
-<div id="allCustomers" align="center">
-	<h3>By Issuer</h3>
+<div id="specificIssuer" align="center">
+	<br>
+	<h3>By Item</h3>
 	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
-		<div class="col">Customer ID</div>
-		<div class="col">Total Purchases</div>
-		<div class="col">Items Purchased</div>
+		<div class="col">Item Name</div>
+		<div class="col">Item Price</div>
+		<div class="col">Quantity Sold</div>
+		<div class="col">Total</div>
+
 	</div>
 
 	<br>
 
-	<div class="row" ng-repeat="issuer in issuerStatis track by $index">
-		<div class="col">{{issuer.issuer}}</div>
-		<div class="col">{{issuer.income}} -/AED</div>
-		<div class="col">{{issuer.items_sold}}</div>
+	<div class="row" ng-repeat="item in itemsStatis track by $index">
+		<div class="col">{{item.name}}</div>
+		<div class="col">{{item.price}} -/AED</div>
+		<div class="col">{{item.quantity_sold}}</div>
+		<div class="col">{{item.price * item.quantity_sold}} -/AED</div>
 	</div>
 	<hr>
-</div>
- 
-<!-- statistics results -->
-<div id="allIssuers" align="center">
-<br>
-<h3>By Customer</h3>
+
+	<br>
+	<h3>By Customer</h3>
 	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
-		<div class="col">Issuer Name</div>
-		<div class="col">Total Income</div>
-		<div class="col">Items Sold</div>
+		<div class="col">Customer ID</div>
+		<div class="col">Total Purchases</div>
+		<div class="col">Items Purchased</div>
 	</div>
 
 	<br>
@@ -96,17 +91,69 @@
 	<hr>
 </div>
 
-	<div id="etisalat">
-	</div>
 
-	<div id="ministryOfHealth">
-	</div>
+<div id="allIssuersStatistics" align="center">
+	
+		<h3>By Issuer</h3>
+		<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
+			<div class="col">Issuer ID</div>
+			<div class="col">Total Income</div>
+			<div class="col">Items Sold</div>
+		</div>
 
-	<div id="du">
-	</div>
+		<br>
 
-	<div id="police">
-	</div>
+		<div class="row" ng-repeat="issuer in issuerStatis track by $index">
+			<div class="col">{{issuer.issuer}}</div>
+			<div class="col">{{issuer.income}} -/AED</div>
+			<div class="col">{{issuer.items_sold}}</div>
+		</div>
+		<hr>
+
+
+	<!-- statistics results -->
+
+		<br>
+		<h3>By Customer</h3>
+		<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
+			<div class="col">Customer ID</div>
+			<div class="col">Total Purchases</div>
+			<div class="col">Items Purchased</div>
+		</div>
+
+		<br>
+
+		<div class="row" ng-repeat="customer in customersStatis track by $index">
+			<div class="col">{{customer.customer_id}}</div>
+			<div class="col">{{customer.total_purchases}} -/AED</div>
+			<div class="col">{{customer.total_items_purchased}}</div>
+		</div>
+		<hr>
+	
+
+	<!-- items results -->
+
+		<br>
+		<h3>By Item</h3>
+		<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
+			<div class="col">Item Name</div>
+			<div class="col">Item Price</div>
+			<div class="col">Quantity Sold</div>
+			<div class="col">Total</div>
+
+		</div>
+
+		<br>
+
+		<div class="row" ng-repeat="item in itemsStatis track by $index">
+			<div class="col">{{item.name}}</div>
+			<div class="col">{{item.price}} -/AED</div>
+			<div class="col">{{item.quantity_sold}}</div>
+			<div class="col">{{item.price * item.quantity_sold}} -/AED</div>
+		</div>
+		<hr>
+</div>
+
 
 </ion-content>
 

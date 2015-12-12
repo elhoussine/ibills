@@ -288,21 +288,21 @@ cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope,
         var itemsCount = 0;
         var itemsArray = [];
 
-      for (i = 7; i < partsOfStr.length; i+=3) { 
-        console.log("items: " + partsOfStr[i] + " price: " + partsOfStr[i+1] + " quantity: " + partsOfStr[i+2]);
-        itemsArray.push({
-          name: partsOfStr[i], 
-          price: parseFloat(partsOfStr[i+1]), 
-          quantity: parseFloat(partsOfStr[i+2])
-        });
-        itemsCount++;
-      }
+        for (i = 7; i < partsOfStr.length; i+=3) { 
+          console.log("items: " + partsOfStr[i] + " price: " + partsOfStr[i+1] + " quantity: " + partsOfStr[i+2]);
+          itemsArray.push({
+            name: partsOfStr[i], 
+            price: parseFloat(partsOfStr[i+1]), 
+            quantity: parseFloat(partsOfStr[i+2])
+          });
+          itemsCount++;
+        }
 
 
-      
-      var issuerRef = currentUserRef.child(partsOfStr[0]);
-      var issuerBillsRef = issuerRef.child("bills");
-      var saveBill = issuerBillsRef.push();
+
+        var issuerRef = currentUserRef.child(partsOfStr[0]);
+        var issuerBillsRef = issuerRef.child("bills");
+        var saveBill = issuerBillsRef.push();
 
       // miliseconds since Jan 01 1970 
       var timestamp = new Date().getTime();
@@ -322,7 +322,7 @@ cApp.controller('HomeCtrl', function($cordovaBarcodeScanner, $scope, $rootScope,
       });
 
 
-      }, function(error) {
+    }, function(error) {
         // An error occurred
         alert("error scanning");
       });
@@ -430,9 +430,9 @@ $scope.addBill = function() {
 
       // showing modal
       $scope.selectedBillShow();
-      }, function(error) { 
-        console.log("error loading issuer bills");
-      });
+    }, function(error) { 
+      console.log("error loading issuer bills");
+    });
 
     };
 
@@ -487,13 +487,13 @@ Controller for Admin's control panel
 
 myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArray, $ionicLoading) { 
   // hiding statistics elements 
-  document.getElementById("allIssuers").style.visibility = "hidden"; 
-  document.getElementById("allCustomers").style.visibility = "hidden"; 
-  document.getElementById("ministryOfHealth").style.visibility = "hidden"; 
-  document.getElementById("police").style.visibility = "hidden"; 
-  document.getElementById("du").style.visibility = "hidden"; 
+  document.getElementById("allIssuersStatistics").style.visibility = "hidden"; 
+  document.getElementById("specificIssuer").style.visibility = "hidden";
+  
+
   // defining variables 
   $scope.dropdown = [];
+  $scope.issuers = [];
 
   // function to logout admin
   $scope.logout = function() { 
@@ -503,6 +503,9 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
     // debugging purpose 
     console.log("user logged out successfully");
   };
+
+
+
 
   // function to merge arrays with same issuer 
   $scope.merge = function(arrayOfObjects) { 
@@ -519,6 +522,10 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
     return arrayOfObjects;
   };
 
+
+
+
+
   // function to fix customer id 
   $scope.fixCustomerID = function (arrayOfObjects) { 
     // array will hold users id's
@@ -531,8 +538,8 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
     allUsers.$loaded(function(success){
 
       // filling users id array 
-      for (u = 0; u < allUsers.length; u++) { 
-        arrayOfObjects[u].customer_id = allUsers[u].$id;
+      for (z = 0; z < allUsers.length; z++) { 
+        arrayOfObjects[z].customer_id = allUsers[z].$id;
       }
 
     });  
@@ -540,18 +547,176 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
     return arrayOfObjects;
   };
 
-  $scope.go = function(selected) { 
+
+
+  // function to fix customer id 
+  $scope.fixCustomerIDForSpecificIssuer= function (arrayOfObjects) { 
+
+    // filling users id array 
+    for (z = 0; z < $scope.chosenUsers.length; z++) { 
+      arrayOfObjects[z].customer_id = $scope.chosenUsers[z];
+    }
+
+    return arrayOfObjects;
+  };
+
+
+
+  // function to merge items
+  $scope.mergeItems = function(arrayOfObjects) { 
+
+    // looping through each item 
+    for (i = 0; i < arrayOfObjects.length; i++){ 
+
+      // getting items beyond selected item to see if 
+      // item is duplicated 
+      for (j = i + 1; j < arrayOfObjects.length; j++) { 
+        // checking if item is duplicated 
+        if (arrayOfObjects[i].name == arrayOfObjects[j].name) { 
+          // found duplicate 
+          // adding duplicate quantity 
+          arrayOfObjects[i].quantity_sold += arrayOfObjects[j].quantity_sold;
+
+          // deleting duplicate item 
+          arrayOfObjects.splice([j], 1);
+        }
+      }
+    }
+
+    // returing clean array of items 
+    return arrayOfObjects;
+  }
+
+
+
+
+
+
+  // code for analytics for specific user 
+  $scope.specificIssuer = function() { 
+    $ionicLoading.show();
+
+    // array will hold users id's
+    $scope.usersID = [];
+
+    // fetching all users
+    $scope.allUsers = $firebaseArray(usersRef);
+
+    // fetching users callback
+    $scope.allUsers.$loaded(function(success){
+
+      // filling users id array 
+      for (u = 0; u < $scope.allUsers.length; u++) { 
+        $scope.usersID.push($scope.allUsers[u].$id);
+      }
+
+      $scope.issuerStatis = [];
+      $scope.customersStatis = [];
+      $scope.itemsStatis = [];
+      
+      for (u = 0; u < $scope.usersID.length; u++) {
+
+        
+        var testingRef = new Firebase("https://ibills.firebaseio.com/users/" + $scope.usersID[u]);
+        $scope.userIssuers = $firebaseArray(testingRef);
+        $scope.userIssuers.$loaded(function(x){
+
+          // looping through particular user's issuers 
+          for (i = 0; i < x.length; i++) { 
+            if (x[i].$id == $scope.dropdown.selected) {
+
+              // chosen users that are in this issuer 
+              $scope.chosenUsers = [];
+
+              console.log(u);
+              $scope.chosenUsers.push($scope.usersID[i].$id);
+
+              var xbill = x[i].bills;
+              var billsArray = Object.keys(xbill).map(function (key) {return xbill[key]});
+              // issuer statictics 
+              var total_income = 0;
+              var items_sold = 0;
+
+              
+              for (j = 0; j < billsArray.length; j++) { 
+                var bill = billsArray[j];
+
+                // getting total number of items 
+                // through accessing each bill 
+                for (k = 0; k < bill.zitems.length; k++) { 
+                  var item = bill.zitems[k];
+                  items_sold += parseFloat(item.quantity);
+
+                  // filling items statistics 
+                  $scope.itemsStatis.push({
+                    name: item.name,
+                    price: parseFloat(item.price),
+                    quantity_sold: parseFloat(item.quantity)
+                  });
+
+                }
+
+                total_income += parseFloat(bill.total);
+              }
+
+              // pushing into all issuers statistics
+              $scope.issuerStatis.push({
+                issuer: x[i].$id,
+                income: total_income,
+                items_sold: items_sold
+              });
+
+
+
+
+            // pushing into all customers statistics
+            $scope.customersStatis.push({
+              customer_id: $scope.usersID[u],
+              total_purchases: total_income,
+              total_items_purchased: items_sold
+            });
+
+            // calling fix customer id function to fill customer id with proper data 
+            $scope.customersStatis = $scope.fixCustomerIDForSpecificIssuer($scope.customersStatis);
+
+            // calling to remove items duplicates and add duplicates quantities
+            $scope.itemsStatis = $scope.mergeItems($scope.itemsStatis);
+
+            // calling to merge issuers 
+            $scope.issuerStatis = $scope.merge($scope.issuerStatis);
+
+            // hiding ionic loading item 
+            $ionicLoading.hide();
+          }
+        }
+      }, function(error){});
+    }
+  }, function(error){});
+};  
+
+
+$scope.go = function() { 
     // making sure all elements are hidden
-    document.getElementById("allIssuers").style.visibility = "hidden";
-    document.getElementById("allCustomers").style.visibility = "hidden"; 
-    document.getElementById("ministryOfHealth").style.visibility = "hidden"; 
-    document.getElementById("police").style.visibility = "hidden"; 
-    document.getElementById("du").style.visibility = "hidden"; 
- 
+    document.getElementById("allIssuersStatistics").style.visibility = "hidden";
+    document.getElementById("specificIssuer").style.visibility = "hidden";
+
+    // $scope.issuerStatis = null;
+    // $scope.customersStatis = null;
+    // $scope.itemsStatis = null;
+
     if ($scope.dropdown.selected == "All Issuers") { 
+      console.log("calling all issuers");
       $scope.allIssuersStatis();
+      document.getElementById("allIssuersStatistics").style.visibility = "visible";
+
+    } else if ($scope.dropdown.selected){
+      $scope.specificIssuer();
+      document.getElementById("specificIssuer").style.visibility = "visible";
+
     }
   };
+
+
 
   $scope.allIssuersStatis = function() { 
 
@@ -580,7 +745,7 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
         var testingRef = new Firebase("https://ibills.firebaseio.com/users/" + $scope.usersID[u]);
         $scope.userIssuers = $firebaseArray(testingRef);
         $scope.userIssuers.$loaded(function(x){
-          
+
           // looping through particular user's issuers 
           for (i = 0; i < x.length; i++) { 
             var xbill = x[i].bills;
@@ -598,6 +763,13 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
               for (k = 0; k < bill.zitems.length; k++) { 
                 var item = bill.zitems[k];
                 items_sold += parseFloat(item.quantity);
+
+                // filling items statistics 
+                $scope.itemsStatis.push({
+                  name: item.name,
+                  price: parseFloat(item.price),
+                  quantity_sold: parseFloat(item.quantity)
+                });
               }
 
               total_income += parseFloat(bill.total);
@@ -622,18 +794,23 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
 
           // calling fix customer id function to fill customer id with proper data 
           $scope.customersStatis = $scope.fixCustomerID($scope.customersStatis);
-          console.log($scope.customersStatis);
+
+          // calling to remove items duplicates and add duplicates quantities
+          $scope.itemsStatis = $scope.mergeItems($scope.itemsStatis);
+
+          // calling to merge issuers 
           $scope.issuerStatis = $scope.merge($scope.issuerStatis);
+
+          // hiding ionic loading item 
           $ionicLoading.hide();
         }, function(error){});
-      }
-    }, function(error){});
-  document.getElementById("allIssuers").style.visibility = "visible";
-  document.getElementById("allCustomers").style.visibility = "visible";
-  };
+}
+}, function(error){});
+};
 
 
 
+$scope.allIssuersStatis();
 
 
   // modal business 
@@ -643,15 +820,15 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
     animation: 'slide-in-up'
   }).then(function(modal) { 
    $scope.settingsModal = modal;
-  });
+ });
 
   $scope.showSettingsModal = function () { 
    $scope.settingsModal.show();
-  };
+ };
 
-  $scope.closeSettingsModal = function() { 
+ $scope.closeSettingsModal = function() { 
    $scope.settingsModal.hide();
-  };
+ };
 
   // modal for creating new bill
   $ionicModal.fromTemplateUrl('templates/createBill.html', {
@@ -659,15 +836,15 @@ myApp.controller('PanelCtrl', function($state, $scope, $ionicModal, $firebaseArr
     animation: 'slide-in-up'
   }).then(function(modal) { 
    $scope.createBillModal = modal;
-  });
+ });
 
   $scope.showCreateBillModal = function () { 
    $scope.createBillModal.show();
-  };
+ };
 
-  $scope.closeCreateBillModal = function() { 
+ $scope.closeCreateBillModal = function() { 
    $scope.createBillModal.hide();
-  };
+ };
 
 
 });
@@ -698,7 +875,7 @@ Controller for Create Bill modal
 
 
 myApp.controller('CreateBillCtrl', function($scope, $ionicPopup) { 
-  
+
   $scope.newBill = [];
   $scope.items = [];
   $scope.numberOfItems = [];
@@ -749,15 +926,15 @@ myApp.controller('CreateBillCtrl', function($scope, $ionicPopup) {
     }
 
     // creating popup alert and showing it
-   var alertPopup = $ionicPopup.alert({
+    var alertPopup = $ionicPopup.alert({
      title: 'Kindly Scan Barcode',
      template: '<div align="center"><img src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + billString +  'alt="barcode"></div>'
    });
-   alertPopup.then(function(res) {
+    alertPopup.then(function(res) {
     // after the customer clicks ok
     // closing modal 
     $scope.closeCreateBillModal();
-   });
+  });
   };
 
 
