@@ -1,19 +1,31 @@
 	
 
 <!-- this title will appear at nav bar  -->
-<ion-view view-title="Login to iBills">
-<ion-content class="padding" ng-controller="LoginCtrl">
+<ion-view view-title="Login to iBills" hide-back-button="true">
+<ion-content class="padding" ng-controller="LoginCtrl" style="background-color:#a5e0f1;" scroll="false">
 
 <!-- login fields -->
 <form ng-submit="login()">
 
-<div class="list list-inset">
-	<label class="item item-input">
-		<input type="email" placeholder="Email" ng-model="loginData.email">
+<!-- <div class="list">
+  <label class="item item-input item-floating-label">
+    <span class="input-label">E-mail</span>
+    <input type="text" placeholder="E-mail" ng-model="loginData.email">
+  </label>
+
+  <label class="item item-input item-floating-label">
+    <span class="input-label">Password</span>
+    <input type="password" placeholder="Password" ng-model="loginData.password">
+  </label>
+</div> -->
+
+<div class="list list-inset"  >
+	<label class="item item-input" >
+		<i class="icon ion-person placeholder-icon"> </i><input type="email" placeholder="Email" ng-model="loginData.email">
 	</label>
 
 	<label class="item item-input">   
-		<input type="password" placeholder="Password" ng-model="loginData.password">
+		<i class="icon ion-key placeholder-icon"></i><input type="password" placeholder="Password" ng-model="loginData.password">
 	</label>
 </div>
 <!-- login submit button -->
@@ -22,7 +34,19 @@
 
 <!-- login submit button -->
 <button class="button button-block button-positive" ng-click="signup()">Sign up</button>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
+<br><br>
 
+<div class="row" >
+<div class="col" align="center">
+	<img src="img/ibills3.png" height="30" width="23">
+	<h6 style="font-size:0.7em; padding:0; margin:0; color:white;">iBills</h6>
+	<h6 style="font-size:0.7em;  padding:0; margin:0; color:white;">Copyright © All Rights Reserved 2016</h6>
+</div>
+</div>
 
 </ion-content>
 </ion-view>

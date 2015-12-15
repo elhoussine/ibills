@@ -20,16 +20,28 @@
 <div class="col">: {{uid}}</div>
 </div>
 
-<hr>
+<hr style="border:1px black dashed;">
+
 
 <div align="center">
+<div class="row">
+<div class="col"><b>Item</b></div>
+<div class="col"><b>QTY</b></div>
+<div class="col"><b>Price</b></div>
+<div class="col"><b>Total</b></div>
+
+<hr style="border:1px black dashed;">
+
+</div>
 <div class="row" ng-repeat="item in selectedBill.zitems">
-<div class="col">{{item.name}} × {{item.quantity}}</div>
+<div class="col">{{item.name}} × </div>
+<div class="col">{{item.quantity}}</div>
 <div class="col">{{item.price}}</div>
+<div class="col">{{item.price * item.quantity}}</div>
 </div>
 </div>
 
-<hr>
+<hr style="border:1px black dashed;">
 
 <div class="row">
 <div class="col">Payment</div>
@@ -52,11 +64,11 @@
 <div class="col">: {{selectedBill.change}}</div>
 </div>
 
-<hr>
+<hr style="border:1px black dashed;">
 
 <div align="center"><b>{{selectedBill.return_policy}}</b></div>
 
-<hr>
+<hr style="border:1px black dashed;">
 
 <!-- close modal -->
 <button class="button button-block button-dark" ng-click="closeBillModal()">Close</button> 

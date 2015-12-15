@@ -1,0 +1,47 @@
+
+
+<ion-view view-title="All Issuers Statistics">
+<ion-content>
+
+<div id="specificIssuer" align="center">
+	<br>
+	<h3>By Item</h3>
+	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
+		<div class="col">Item Name</div>
+		<div class="col">Item Price</div>
+		<div class="col">Quantity Sold</div>
+		<div class="col">Total</div>
+
+	</div>
+
+	<br>
+
+	<div class="row" ng-repeat="item in itemsStatis track by $index">
+		<div class="col">{{item.name}}</div>
+		<div class="col">{{item.price}} -/AED</div>
+		<div class="col">{{item.quantity_sold}}</div>
+		<div class="col">{{item.price * item.quantity_sold}} -/AED</div>
+	</div>
+	<hr>
+
+	<br>
+	<h3>By Customer</h3>
+	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
+		<div class="col">Customer ID</div>
+		<div class="col">Total Purchases</div>
+		<div class="col">Items Purchased</div>
+	</div>
+
+	<br>
+
+	<div class="row" ng-repeat="customer in customersStatis track by $index">
+		<div class="col">{{customer.customer_id}}</div>
+		<div class="col">{{customer.total_purchases}} -/AED</div>
+		<div class="col">{{customer.total_items_purchased}}</div>
+	</div>
+	<hr>
+</div>
+
+
+</ion-content>
+</ion-view>

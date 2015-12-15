@@ -28,11 +28,22 @@ myApp.config(function($stateProvider, $urlRouterProvider) {
   })
 
   
-
   .state('controlPanel', { 
     url: '/controlPanel', 
     controller: 'PanelCtrl',
     templateUrl: 'templates/controlPanel.html'
+  })
+
+  .state('allIssuersPage', { 
+    url: '/allIssuersPage', 
+    controller: 'allIssuersPageCtrl',
+    templateUrl: 'templates/allIssuersPage.html'
+  })
+
+  .state('specificIssuersPage', { 
+    url: '/specificIssuersPage',
+    controller: 'specificIssuersPageCtrl',
+    templateUrl: 'templates/specificIssuersPage.html'
   });
 
 

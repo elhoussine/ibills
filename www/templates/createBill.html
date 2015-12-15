@@ -29,8 +29,14 @@
 		<input type="text" placeholder="Return Policy" ng-model="newBill.return_policy">
 	</label>
 </div>
+<div class="list">
+		<label class="item item-input">
+		<input type="number" placeholder="Number of Items" ng-model="numberOfItems.number">
+	</label>
+</div>
 
 <div class="list" ng-repeat="item in getNumber(numberOfItems.number) track by $index">
+
 	<label class="item item-input">
 		<input type="text" placeholder="Item Name" ng-model="items[$index].name">
 	</label>
@@ -46,9 +52,6 @@
 
 
 <div class="list">
-	<label class="item item-input">
-		<input type="number" placeholder="Number of Items" ng-model="numberOfItems.number">
-	</label>
 
 	<label class="item item-input">
 		<input type="text" placeholder="Total" ng-model="newBill.total">
@@ -71,7 +74,7 @@
 <button class="button button-block button-energized" ng-click="createBarcode()">Create Barcode</button> 
 
 <!-- close modal -->
-<button class="button button-block button-assertive" ng-click="closeCreateBillModal()">Close</button> 
+<button class="button button-block button-assertive" ng-click="closeModal()">Close</button> 
 
 </ion-content>
 </ion-modal-view>

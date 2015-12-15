@@ -1,33 +1,12 @@
-<!-- this title will appear at nav bar  -->
 
 
-<ion-view view-title="Control Panel" hide-back-button="true">
-
-
-
+<ion-view view-title="All Issuers Statistics">
 <ion-content>
-
-<!-- refresh settings  -->
-<ion-refresher pulling-text="Pull to refresh" on-refresh="doRefresh()">
-</ion-refresher>
-
-<div class="row">
-	<div class="col">
-		<!-- logout button -->
-		<button class="button button-block button-dark" ng-click="logout()">Logout</button>
-	</div>
-	<div class="col">
-		<!-- create bill button -->
-		<button class="button button-block button-positive" ng-click="createAndShowModal()">Create Bill</button>
-	</div>
-</div>
-
-<hr>
 
 <br>
 <div id="allIssuersStatistics" align="center">
 	
-	<h4>Statistics By Issuer</h4>
+	<h3>By Issuer</h3>
 	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
 		<div class="col">Issuer ID</div>
 		<div class="col">Total Income</div>
@@ -47,7 +26,7 @@
 	<!-- statistics results -->
 
 	<br>
-	<h4>Statistics By Customer</h4>
+	<h3>By Customer</h3>
 	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
 		<div class="col">Customer ID</div>
 		<div class="col">Total Purchases</div>
@@ -67,7 +46,7 @@
 	<!-- items results -->
 
 	<br>
-	<h4>Statistics By Item</h4>
+	<h3>By Item</h3>
 	<div class="row" style="background-color: #666666; color: white; border-top: 1px black solid; border-bottom: 1px black solid;">
 		<div class="col">Item Name</div>
 		<div class="col">Item Price</div>
@@ -87,9 +66,5 @@
 	<hr>
 </div>
 
-
 </ion-content>
-
 </ion-view>
-
-

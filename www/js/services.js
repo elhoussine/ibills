@@ -9,3 +9,20 @@ sApp.factory("Auth", ["$firebaseAuth",
     return $firebaseAuth(ref);
   }
 ]);
+
+
+sApp.factory('Data', function() {
+
+	var data = { 
+		Global: ''
+	};
+
+	return { 
+		setGlobal: function (selection) { 
+			data.Global = selection;
+		}, getGlobal: function () { 
+			return data.Global;
+		}
+	};
+
+});
